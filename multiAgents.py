@@ -12,6 +12,7 @@
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
+from asyncio import sleep, wait
 from util import manhattanDistance
 from game import Directions
 import random, util
@@ -39,8 +40,9 @@ class ReflexAgent(Agent):
         some Directions.X for some X in the set {NORTH, SOUTH, WEST, EAST, STOP}
         """
         # Collect legal moves and successor states
+        
         legalMoves = gameState.getLegalActions()
-
+        
         # Choose one of the best actions
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
         bestScore = max(scores)
@@ -74,7 +76,34 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+        #ghost_X, ghost_Y = newGhostStates[0].getPosition()
+        #pacman_X, pacman_Y = newPos 
+        #newFood.asList()
+        #newPos
+        #
+        "*** TEST ***"
+        #print(type(successorGameState))
+        #print(successorGameState.getWalls())
+        #a = newGhostStates[0]
+        # a.getPostion()
+        
+        # pac_X, pac_Y = 
+        # print (a)
+        #print(newFood.asList())
+        #print(action)
+        #print(successorGameState.getScore())
+
+        # check corner
+        sumManhattanDistance = 0
+        #print(len(successorGameState.getWalls())) 
+        for newGhostPos in newGhostStates:
+            sumManhattanDistance += manhattanDistance(newPos, newGhostPos.getPosition())
+            
+        # insert a* 
+        if sumManhattanDistance > len(newGhostStates) * 13 :
+            return successorGameState.getScore()
+        else:
+            return successorGameState.getScore() + sumManhattanDistance * len(newGhostStates)
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -134,7 +163,15 @@ class MinimaxAgent(MultiAgentSearchAgent):
         gameState.isLose():
         Returns whether or not the game state is a losing state
         """
+
+        "*** TESTING CODE ***"
+        #print(self.depth)
+        print(self.evaluationFunction)
         "*** YOUR CODE HERE ***"
+        legalMoves = gameState.getLegalActions()
+        
+
+        return legalMoves[0]
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
