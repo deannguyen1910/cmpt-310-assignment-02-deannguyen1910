@@ -269,8 +269,51 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
 
+        def minValue(gameState, level, ghostIndex, alpha, beta):
+            legalMoves = gameState.getLegalActions(ghostIndex)
+
+            if len(legalMoves) == 0:
+                return self.evaluationFunction(gameState)
+            
+            v = 999999
+            for move in legalMoves:
+                if ghostIndex == gameState.getNumAgents() - 1:
+                    tempMaxValue = min(v, maxValue(gameState.generateSuccessor(ghostIndex, move), level, alpha, beta))
+                else:
+                    tempMaxValue = min(v, minValue(gameState.generateSuccessor(ghostIndex, move), level, ghostIndex + 1, alpha, beta))
+
+                v = min(v, tempMaxValue)
+                if v < alpha:
+                    return v 
+                beta = min(beta, v)
+            return v
+
+        def maxValue(gameState, level, alpha, beta):
+            legalMoves = gameState.getLegalActions(0)
+
+            if len(legalMoves) == 0 or level == self.depth:
+                return self.evaluationFunction(gameState)
+            v = -999999
+        
+            for move in legalMoves:
+                tempMinValue = minValue(gameState.generateSuccessor(0, move), level + 1, 1, alpha, beta)
+                v = max(v, tempMinValue)
+                if v > beta:
+                    return v 
+                alpha = max(alpha, v)
+
+                if level == 0 and v == tempMinValue:
+                    m = move
+            if level == 0: 
+                return m
+            return v
+        
+
+        return maxValue(gameState, 0, -999999, 999999)
+
+        util.raiseNotDefined()
+        
 class ExpectimaxAgent(MultiAgentSearchAgent):
     """
       Your expectimax agent (question 4)
