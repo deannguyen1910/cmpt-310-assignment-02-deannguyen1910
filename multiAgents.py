@@ -181,12 +181,82 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         "*** TESTING CODE ***"
         #print(self.depth)
-        print(self.evaluationFunction)
+        #print(self.evaluationFunction)
+        # legalMoves = gameState.getLegalActions()
+        # newGhostStates = gameState.getGhostStates()
+        # print (newGhostStates[0])
+        # a, b = newGhostStates[0].getPosition()
+        # print (a, b)
+        # print(gameState.getNumAgents())
         "*** YOUR CODE HERE ***"
-        legalMoves = gameState.getLegalActions()
-        
+        # from util import Queue
+        # q = Queue()
+        # q.push((gameState, 0, []))
+        #iterative method
+        # while q.isEmpty is False:
+        #     tempGameState, level, path = q.pop()
+        #     listGhostMoves = MinimaxAgent.getListGhostMoves(tempGameState)
+        #     for moves in listGhostMoves:
+        #         for i in range(gameState.getNumAgents() + 1):
+        #             tempGameState.generateSuccessor(i, moves[i])
 
-        return legalMoves[0]
+        #         if level != self.depth:
+        #             # if tempGameState.isWin() == True:
+        #             #     # add 
+
+        #             if tempGameState.isLose() != False:
+        #                 q.push((tempGameState, level + 1))
+                    
+        #         else:
+        #             temp.append()
+        
+        # for moves in legalMoves:
+        # def getListGhostMoves(gameState):
+        #     import itertools
+        #     # newGhostStates = gameState.getGhostStates()
+        #     listMoves = []
+        #     for i in range (1, gameState.getNumAgents() + 1):
+                
+        #         listMoves.append(gameState.getLegalActions(i))
+
+        #     return list(itertools.product(*listMoves))
+
+        def minValue(gameState, level, ghostIndex):
+            legalMoves = gameState.getLegalActions(ghostIndex)
+
+            if len(legalMoves) == 0:
+                return self.evaluationFunction(gameState)
+            
+            v = 999999
+            if ghostIndex == gameState.getNumAgents() - 1:
+                for move in legalMoves:
+                    v = min(v, maxValue(gameState.generateSuccessor(ghostIndex, move), level))
+                return v
+            else:
+                for move in legalMoves:
+                    v = min(v, minValue(gameState.generateSuccessor(ghostIndex, move), level, ghostIndex + 1))
+                return v
+
+        def maxValue(gameState, level):
+            legalMoves = gameState.getLegalActions(0)
+
+            if len(legalMoves) == 0 or level == self.depth:
+                return self.evaluationFunction(gameState)
+            v = -999999
+            for move in legalMoves:
+                v = max(v, minValue(gameState.generateSuccessor(0, move), level + 1, 1))
+
+            return v
+
+        maxTemp = -999999
+        tempmove = ""
+        for move in gameState.getLegalActions(0):
+            temp = minValue(gameState.generateSuccessor(0, move), 1, 1)
+            if maxTemp < temp:
+                maxTemp = temp
+                tempmove = move
+
+        return tempmove
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
