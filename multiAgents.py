@@ -94,16 +94,31 @@ class ReflexAgent(Agent):
         #print(successorGameState.getScore())
 
         # check corner
-        sumManhattanDistance = 0
+        
         #print(len(successorGameState.getWalls())) 
-        for newGhostPos in newGhostStates:
-            sumManhattanDistance += manhattanDistance(newPos, newGhostPos.getPosition())
+        
             
         # insert a* 
-        if sumManhattanDistance > len(newGhostStates) * 13 :
-            return successorGameState.getScore()
-        else:
-            return successorGameState.getScore() + sumManhattanDistance * len(newGhostStates)
+        foods = newFood.asList()
+        min = 999999
+        for food in foods:
+            temp = manhattanDistance(newPos, food)
+            if temp < min:
+                min = temp
+        
+        # max = 0.001
+        # for newGhostPos in newGhostStates:
+            
+        #     temp = ((newPos[0] - newGhostPos.getPosition()[0]) ** 2 + (newPos[1] - newGhostPos.getPosition()[1])) ** 0.5
+        #     if (temp > max):
+        #         if temp <= 1.5:
+        #             max = temp
+            
+        # insert a* 
+       
+
+        #print (min)
+        return successorGameState.getScore() + 1/min
 
 def scoreEvaluationFunction(currentGameState):
     """
