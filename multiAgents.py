@@ -95,10 +95,9 @@ class ReflexAgent(Agent):
 
         # check corner
         
-        #print(len(successorGameState.getWalls())) 
-        
-            
+        #print(len(successorGameState.getWalls()))     
         # insert a* 
+
         foods = newFood.asList()
         min = 999999
         for food in foods:
@@ -375,7 +374,82 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
+    # newGhostStates = currentGameState.getGhostStates()
+    # newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+    # minA = 999999
+    # for food in foods:
+    #     temp = manhattanDistance(newPos, food)
+    #     if temp < minA:
+    #         minA = temp
+    
+    # minB = 999999
+    # for newGhostPos in newGhostStates:
+    #     temp = abs(manhattanDistance(newPos, newGhostPos.getPosition()))
+    #     if (temp < minB):
+    #         minB = temp
+        
+    # #print (min)
+    # #return currentGameState.getScore()  + 1/min
+    # if (minB <= 2):
+    #     return currentGameState.getScore()  - 1000 * minB
+    # elif (temp >= 1 for temp in newScaredTimes):
+    #     return currentGameState.getScore()  + 1 / minA
+    # else:
+    #     return currentGameState.getScore()+ 1 / minA  - 1/minB
+
+
+    "*** YOUR CODE HERE - 2nd TRY ***"
+    #each food is 10 pts
+    #each step -1
+    #grid 3x3
+    gridLen = 2
+
+    # make every movement is estimate with expectimax. Get the priority as which should be closer to food
+
+    def expValue(gameState, level, maxDepth, ghostIndex):
+        legalMoves = gameState.getLegalActions(ghostIndex)
+
+        if len(legalMoves) == 0:
+            return gameState.getScore() + 9/ getmin(gameState)
+        
+        v = 0
+        prob = 1 / (len(legalMoves) ) 
+        if ghostIndex == gameState.getNumAgents() - 1:
+            for move in legalMoves:
+                
+                v += prob * (maxValue(gameState.generateSuccessor(ghostIndex, move), level, maxDepth) + 9/ getmin(gameState.generateSuccessor(ghostIndex, move)) )
+            return v
+        else:
+            for move in legalMoves:
+                
+                v += prob * (expValue(gameState.generateSuccessor(ghostIndex, move), level, maxDepth, ghostIndex + 1))
+            return v
+    
+
+    def maxValue(gameState, level, maxDepth):
+        legalMoves = gameState.getLegalActions(0)
+        #print(legalMoves)
+        if len(legalMoves) == 0 or level == maxDepth:
+            return gameState.getScore() 
+        v = -999999
+        for move in legalMoves:
+            v = max(v, expValue(gameState.generateSuccessor(0, move), level + 1, maxDepth, 1)) 
+        return v
+    
+    return maxValue(currentGameState, 1, gridLen)
+
+
     util.raiseNotDefined()
 
+def getmin(gameState):
+    foods = gameState.getFood().asList()
+    newPos = gameState.getPacmanPosition()
+    minA = 999999
+    for food in foods:
+        temp = manhattanDistance(newPos, food)
+        if temp < minA:
+            minA = temp
+    return minA
 # Abbreviation
 better = betterEvaluationFunction
